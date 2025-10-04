@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terra Watch: Earth's Changing Balance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1419 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            background: radial-gradient(ellipse at center, rgba(26, 31, 58, 0.9) 0%, rgba(10, 14, 39, 1) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><circle cx="200" cy="200" r="3" fill="%23ffffff" opacity="0.3"/><circle cx="400" cy="100" r="2" fill="%23ffffff" opacity="0.4"/><circle cx="600" cy="300" r="2" fill="%23ffffff" opacity="0.3"/><circle cx="800" cy="150" r="3" fill="%23ffffff" opacity="0.4"/><circle cx="1000" cy="250" r="2" fill="%23ffffff" opacity="0.3"/><circle cx="300" cy="500" r="2" fill="%23ffffff" opacity="0.4"/><circle cx="700" cy="600" r="3" fill="%23ffffff" opacity="0.3"/><circle cx="900" cy="550" r="2" fill="%23ffffff" opacity="0.4"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #4ade80, #3b82f6, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: slideDown 1s ease-out;
+            z-index: 1;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #94a3b8;
+            margin-bottom: 3rem;
+            animation: fadeIn 1s ease-out 0.3s both;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            animation: bounce 2s infinite;
+            z-index: 1;
+            cursor: pointer;
+            font-size: 2rem;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 6rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(45deg, #10b981, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .data-selector {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .data-btn {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .data-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .data-btn.active {
+            background: linear-gradient(45deg, #10b981, #06b6d4);
+            border-color: #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .viewer-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .map-display {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            background: #000;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-display img {
+            width: 100%;
+            height: auto;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .map-display img.loaded {
+            opacity: 1;
+        }
+
+        .timeline {
+            position: relative;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .timeline-slider {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            border-radius: 3px;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #10b981, #06b6d4);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #10b981, #06b6d4);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .year-display {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #10b981;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .control-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            background: linear-gradient(45deg, #10b981, #06b6d4);
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+        }
+
+        .info-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #10b981;
+        }
+
+        .info-card p {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 1.2rem; }
+            .section-title { font-size: 2rem; }
+            .data-btn { padding: 0.75rem 1.5rem; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Terra Watch</h1>
+        <p class="subtitle">Earth's Changing Balance: Vegetation, Population & Carbon Monoxide</p>
+        <div class="scroll-indicator">⌄</div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2 class="section-title">Interactive Data Explorer</h2>
+            
+            <div class="data-selector">
+                <button class="data-btn active" onclick="changeDataType('vegetation')">Vegetation</button>
+                <button class="data-btn" onclick="changeDataType('population')">Population Density</button>
+                <button class="data-btn" onclick="changeDataType('co')">Carbon Monoxide</button>
+            </div>
+
+            <div class="viewer-container">
+                <div class="year-display" id="yearDisplay">2002</div>
+                
+                <div class="map-display">
+                    <img id="mapImage" src="" alt="Global Map" class="loaded">
+                </div>
+
+                <div class="timeline">
+                    <input type="range" id="timelineSlider" min="0" max="5" value="0" class="timeline-slider">
+                </div>
+
+                <div class="controls">
+                    <button class="control-btn" id="playBtn" onclick="playAnimation()">▶ Play Timeline</button>
+                    <button class="control-btn" onclick="stopAnimation()">⏸ Pause</button>
+                </div>
+
+                <div class="legend" id="legend"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Understanding the Connection</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Vegetation Coverage</h3>
+                    <p>Green areas represent Earth's vital forests, grasslands, and crops. These ecosystems absorb CO₂ from the atmosphere and produce oxygen, acting as Earth's lungs. Notice how vegetation patterns change over decades.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Human Population</h3>
+                    <p>Population density shown in orange and red reveals where humans concentrate. Urban expansion, industrial zones, and agricultural development directly impact vegetation loss and emissions.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Carbon Monoxide</h3>
+                    <p>CO emissions (red hotspots) primarily come from incomplete combustion - vehicles, industry, and fires. High CO levels indicate pollution from human activities and often correlate with deforestation areas.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">The Critical Relationship</h2>
+            <div class="info-card">
+                <h3>How They're Connected</h3>
+                <p>As human populations grow and expand into new territories, vegetation is cleared for cities, farms, and infrastructure. This deforestation removes natural CO₂ absorbers while human activities increase emissions. The data shows a troubling pattern: areas with vegetation loss often show increased CO levels, particularly in rapidly developing regions like the Amazon, Southeast Asia, and Central Africa.</p>
+                <br>
+                <p>Vegetation acts as Earth's natural air filter. When forests are destroyed, not only do we lose this filtering capacity, but the burning and decay of vegetation releases stored carbon back into the atmosphere, creating a double impact on air quality and climate change.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'https://raw.githubusercontent.com/Adhaaaaam/terra-watch/main/';
+        
+        const dataTypes = {
+            vegetation: {
+                years: [2002, 2005, 2010, 2015, 2020, 2024],
+                images: [
+                    BASE_URL + 'vegetation/2002.png',
+                    BASE_URL + 'vegetation/2005.png',
+                    BASE_URL + 'vegetation/2010.png',
+                    BASE_URL + 'vegetation/2015.png',
+                    BASE_URL + 'vegetation/2020.png',
+                    BASE_URL + 'vegetation/2024.png'
+                ],
+                legend: [
+                    { color: '#22c55e', label: 'Dense Vegetation' },
+                    { color: '#84cc16', label: 'Moderate Vegetation' },
+                    { color: '#d4d4d4', label: 'Low/No Vegetation' }
+                ]
+            },
+            population: {
+                years: [2000, 2005, 2010, 2015, 2020],
+                images: [
+                    BASE_URL + 'population/2000.png',
+                    BASE_URL + 'population/2005.png',
+                    BASE_URL + 'population/2010.png',
+                    BASE_URL + 'population/2015.png',
+                    BASE_URL + 'population/2020.png'
+                ],
+                legend: [
+                    { color: '#dc2626', label: 'High Population' },
+                    { color: '#f97316', label: 'Medium Population' },
+                    { color: '#fbbf24', label: 'Low Population' },
+                    { color: '#94a3b8', label: 'Very Low Population' }
+                ]
+            },
+            co: {
+                years: [1995, 2000, 2005, 2010, 2013, 2015, 2018, 2020, 2023, 2024],
+                images: [
+                    BASE_URL + 'nasa%20co/1995.png',
+                    BASE_URL + 'nasa%20co/2000.png',
+                    BASE_URL + 'nasa%20co/2005.png',
+                    BASE_URL + 'nasa%20co/2010.png',
+                    BASE_URL + 'nasa%20co/2013.png',
+                    BASE_URL + 'nasa%20co/2015.png',
+                    BASE_URL + 'nasa%20co/2018.png',
+                    BASE_URL + 'nasa%20co/2020.png',
+                    BASE_URL + 'nasa%20co/2023.png',
+                    BASE_URL + 'nasa%20co/2024.png'
+                ],
+                legend: [
+                    { color: '#dc2626', label: 'High CO Levels' },
+                    { color: '#f97316', label: 'Medium CO Levels' },
+                    { color: '#fbbf24', label: 'Moderate CO Levels' },
+                    { color: '#60a5fa', label: 'Low CO Levels' }
+                ]
+            }
+        };
+
+        let currentDataType = 'vegetation';
+        let currentIndex = 0;
+        let animationInterval = null;
+
+        function changeDataType(type) {
+            currentDataType = type;
+            currentIndex = 0;
+            stopAnimation();
+            
+            document.querySelectorAll('.data-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            const slider = document.getElementById('timelineSlider');
+            slider.max = dataTypes[type].years.length - 1;
+            slider.value = 0;
+
+            updateDisplay();
+            updateLegend();
+        }
+
+        function updateDisplay() {
+            const data = dataTypes[currentDataType];
+            const year = data.years[currentIndex];
+            const imageUrl = data.images[currentIndex];
+            
+            document.getElementById('yearDisplay').textContent = year;
+            
+            const mapImg = document.getElementById('mapImage');
+            mapImg.classList.remove('loaded');
+            
+            setTimeout(() => {
+                mapImg.src = imageUrl;
+                mapImg.onload = () => {
+                    mapImg.classList.add('loaded');
+                };
+            }, 50);
+            
+            document.getElementById('timelineSlider').value = currentIndex;
+        }
+
+        function updateLegend() {
+            const legend = document.getElementById('legend');
+            const data = dataTypes[currentDataType];
+            
+            legend.innerHTML = data.legend.map(item => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: ${item.color}"></div>
+                    <span>${item.label}</span>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('timelineSlider').addEventListener('input', function(e) {
+            currentIndex = parseInt(e.target.value);
+            updateDisplay();
+            stopAnimation();
+        });
+
+        function playAnimation() {
+            stopAnimation();
+            const playBtn = document.getElementById('playBtn');
+            playBtn.disabled = true;
+            
+            animationInterval = setInterval(() => {
+                currentIndex++;
+                if (currentIndex >= dataTypes[currentDataType].years.length) {
+                    currentIndex = 0;
+                }
+                updateDisplay();
+            }, 2000);
+        }
+
+        function stopAnimation() {
+            if (animationInterval) {
+                clearInterval(animationInterval);
+                animationInterval = null;
+            }
+            const playBtn = document.getElementById('playBtn');
+            playBtn.disabled = false;
+        }
+
+        document.querySelector('.scroll-indicator').addEventListener('click', () => {
+            window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+        });
+
+        updateDisplay();
+        updateLegend();
+    </script>
+</body>
+</html>
